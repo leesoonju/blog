@@ -17,6 +17,7 @@ urlpatterns = [
                                                              #blog/create 경로로 가면 views안에 있는 create함수를 실행해라
                                                              #url을 추가해줬다, 즉 path를 추가해줬다고 해서 반드시 html띄워야 되는 거는 아님
     path('portfolio/', port.views.portfolio, name="portfolio"),
+    path('account', include('account.urls')),
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
    
 # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEFIA_ROOT)

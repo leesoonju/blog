@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
+from django.core.paginator import Paginator
 from .models import Blog
 
 def home(request):
@@ -9,7 +10,14 @@ def home(request):
                          #       = 쿼리셋 활용할 수 있게 함 (쿼리셋 만들고, 지우고 등등)
                          # 메소드 형식은 -> 모델이름.쿼리셋 -> objects.메소드
                          # home.html에서 blogs.all에는 내가 작성한 모든 블로그 글들이 담김 (.all도 메소드)
-    return render(request, 'home.html', {'blogs' : blogs})
+
+    blog_list = Blog.objects.all()       # 블로그의 모든 글들을 대상으로 한다
+    paginator = Paginator(blog_list, 4)   # blog_list 객체 3개를 한 페이지로 가르겠다
+    page = request.GET.get('page')        # request된 페이지가 뭔지 알아내고, request 페이지를 변수에 담아냄
+                                          # GET방식으로 얻어낸 데이터 중 key값이 page인 딕셔너리형의 value값을 담아준다
+    posts = paginator.get_page(page)       # request된 페이지를 얻어온 뒤 return
+                                          # Paginator 함수 중에 get_page 사용, 인자로 page사용 (page변수 안에는 page번호 들어있음)
+    return render(request, 'home.html', {'blogs' : blogs , 'posts' : posts})
 
 
 def detail(request, blog_id):
