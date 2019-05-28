@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, Page
 from .models import Blog
 
 def home(request):
@@ -12,12 +12,12 @@ def home(request):
                          # home.html에서 blogs.all에는 내가 작성한 모든 블로그 글들이 담김 (.all도 메소드)
 
 
-    blog_list = Blog.objects.all()       # 블로그의 모든 글들을 대상으로 한다
+    blog_list = Blog.objects.all()        # 블로그의 모든 글들을 대상으로 한다
     paginator = Paginator(blog_list, 3)   # blog_list 객체 3개를 한 페이지로 가르겠다
                                           # Paginator 함수는 객체들을 원하는 갯수만큼 잘라주는 역할, 잘라서 paginator 변수에 담음
     page = request.GET.get('page')        # request된 페이지가 뭔지 알아내고, request 페이지를 변수에 담아냄
                                           # GET방식으로 얻어낸 데이터 중 key값이 page인 딕셔너리형의 value값을 담아준다
-    posts = paginator.get_page(page)       # request된 페이지를 얻어온 뒤 return
+    posts = paginator.get_page(page)      # request된 페이지를 얻어온 뒤 return
                                           # Paginator 함수 중에 get_page 사용, 인자로 page사용 (page변수 안에는 page번호 들어있음)
     return render(request, 'home.html', {'blogs' : blogs , 'posts' : posts})
 
@@ -37,3 +37,12 @@ def create(request):   # 입력받은 내용을 데이터베이스에 넣어주�
     blog.save() # .save()는 쿼리셋메소드중 하나임, blog라는 객체에 title 변수에 넣은 내용, 
                 # body에 넣은 내용, pub_date에 넣은 내용을 데이터베이스에 저장해라 라는 메소드이다.
     return redirect('/blog/' +str(blog.id)) #blog.id는 int형이므로 문자열로 바뀌주기 위해 str 붙여줌
+
+
+def search(request, blog_id):  # new.html을 띄워주는 함수
+    blog = Blog()
+    blog_detail = get_object_or_404(Blog, pk=blog_id)
+    if request.method == 'POST':
+            if request.POST['search'] == request.GET['title']:
+                return render(request, '/blog/' + str(blog.id), {'blog': blog_detail})
+    return render (request, 'home.html')

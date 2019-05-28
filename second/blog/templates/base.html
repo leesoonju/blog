@@ -45,8 +45,9 @@
                     <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                 </li>
             </ul>
-            <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" placeholder="Search" aria-label="Search">
+            <form class="form-inline my-2 my-lg-0" action="{% url 'search' %}">
+                <input class="form-control mr-sm-2" method = "POST" type="text" name="search" value = "제목: " placeholder="Search" aria-label="Search">
+                <input class="form-control mr-sm-2" type="submit" value="search">
             </form>
         </div>
     </nav>
