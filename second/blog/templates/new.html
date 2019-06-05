@@ -2,6 +2,9 @@
 <!--base.html 불러오는 태그-->
 
 {% block contents %}
+
+<!-- ####form강의 듣기 전 태그####
+   
     <div class = "container">
         <form action="{% url 'create' %}">  
             <br>
@@ -15,3 +18,16 @@
         </form>
     </div>
 {%endblock%}
+-->
+
+
+<div class = "container">
+    <form method="POST">
+    {% csrf_token %}
+    <table>
+        {{form.as_table}}  <!--as_table은 입력공간 태그 방식, 표의 형식으로 정렬해라/이거 없어도 잘 돌아감-->      
+    </table>
+    <br>
+        <input class = "btn btn-dark" type="submit" value="제출">
+    </form>
+</div>

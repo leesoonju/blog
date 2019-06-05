@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.core.paginator import Paginator, Page
 from .models import Blog
+from .form import BlogPost
 
 def home(request):
     blogs = Blog.objects # 클래스이름.objects쓰면 models.py로부터 객체 목록을 전달받을 수 있게 됨 
@@ -12,7 +13,7 @@ def home(request):
                          # home.html에서 blogs.all에는 내가 작성한 모든 블로그 글들이 담김 (.all도 메소드)
 
 
-    blog_list = Blog.objects.all()        # 블로그의 모든 글들을 대상으로 한다
+    blog_list = Blog.objects.all()       # 블로그의 모든 글들을 대상으로 한다
     paginator = Paginator(blog_list, 3)   # blog_list 객체 3개를 한 페이지로 가르겠다
                                           # Paginator 함수는 객체들을 원하는 갯수만큼 잘라주는 역할, 잘라서 paginator 변수에 담음
     page = request.GET.get('page')        # request된 페이지가 뭔지 알아내고, request 페이지를 변수에 담아냄
@@ -46,3 +47,18 @@ def search(request, blog_id):  # new.html을 띄워주는 함수
             if request.POST['search'] == request.GET['title']:
                 return render(request, '/blog/' + str(blog.id), {'blog': blog_detail})
     return render (request, 'home.html')
+
+def blogpost(request):
+    # 1. 입력된 내용을 처리하는 기능
+    if request.method == 'POST':           
+        forms = BlogPost(request.POST)     # forms이라는 변수 안에 POST방식으로 들어온 내용(입력받은 내용) 담기
+        if form.is_valid():                # form이 잘 입력됐나 검사하는 과정/ 잘 됐으면  True 반환
+            post = form.save(commit=False) # 모델 객체를 가져오되, 아직 저장하지 마라
+            post.pub_date = timezone.now() # 입력공간에서는 title, body만 입력했음 pub_date는 views에서 자동으로 입력되게끔
+            post.save()
+            return redirect('home')
+
+    # 2. 빈 페이지를 띄워주는 기능 (request.method가 GET일때)
+    else:  
+        form = BlogPost()                  # BlogPost의 객체 form 만들기 -> 비어있는 입력공간이 생김
+        return render(request, 'new.html', {'forms':forms})
